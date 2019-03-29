@@ -1,6 +1,6 @@
 # AWS infrestructure Template
 
-[![N|Solid](https://dtt-ecys.org/cpfecys/static/images/home-images/LogoTricentenaria.png)
+![Alt text](images/usac.PNG?raw=true "Logo de usac")
 
 
 
