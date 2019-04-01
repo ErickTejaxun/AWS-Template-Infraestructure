@@ -1,9 +1,12 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: >
-  Plantilla para la creación del security group 
-  Seminario de sistemas 1.
-  Erick Roberto Tejaxun Xicon 201213050
+Description: > 
+  This is a template to create a Security group 
+  how part of project number one of Seminario de sistemas 1 course.  
+  Erick Roberto Tejaxun Xicon 201213050 
+  This security group have the directive that leave that we can connect with ec2 instance (server) 
+  with ssh, and leave that the http/https trafic can in and out of our public subnet.
+  And let a the trafic though our subnets.  
 Resources:
 
   LoadBalancerSecurityGroup:

@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: "2019-03-30"
 
 Description: > 
   This is a template to create a VPC
@@ -13,31 +13,31 @@ Parameters:
   CidrBlock:
     Description: Please enter the IP range (CIDR notation) for this VPC
     Type: String
-    Default: 10.10.0.0/16
+    Default: 10.10.0.0/16 # Con esto podemos tener muchas redes distintas. 255 
 
 Resources:
-  VPC:
-    Type: AWS::EC2::VPC
+  VPC: #Declararemos los parametros para nuestra virtual private cloud. 
+    Type: AWS::EC2::VPC 
     Properties:
-      CidrBlock: !Ref CidrBlock
+      CidrBlock: !Ref CidrBlock # Hacemos referencia al CidrBlock (Bloque de direcciones) creado anteriormente.
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName} Vpc
+          Value: !Sub ${AWS::StackName} Vpc #Nombre de nuestra stack+"vpc"
 
   InternetGateway:
-    Type: AWS::EC2::InternetGateway
+    Type: AWS::EC2::InternetGateway #Nuestra puerta de enlace para tener conexión a internet en nuestra vpc
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName} InternetGateway
+          Value: !Sub ${AWS::StackName} InternetGateway 
 
   InternetGatewayAttachment:
-    Type: AWS::EC2::VPCGatewayAttachment
+    Type: AWS::EC2::VPCGatewayAttachment #Agregamos nuestra puerta de enlace a internet a nuestra vpc.
     Properties:
       InternetGatewayId: !Ref InternetGateway
       VpcId: !Ref VPC
 
-  PublicSubnet1:
+  PublicSubnet1: # Primer subred publica en AV1
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
@@ -48,7 +48,7 @@ Resources:
         - Key: Name
           Value: !Sub ${AWS::StackName} Public Subnet (AZ1)
 
-  PublicSubnet2:
+  PublicSubnet2: # Segunda red publica en AV 2
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
@@ -59,7 +59,7 @@ Resources:
         - Key: Name
           Value: !Sub ${AWS::StackName} Public Subnet (AZ2)
 
-  PrivateSubnet1:
+  PrivateSubnet1: # Primer subred privada en AV1
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
@@ -70,7 +70,7 @@ Resources:
         - Key: Name
           Value: !Sub ${AWS::StackName} Private Subnet (AZ1)
 
-  PrivateSubnet2:
+  PrivateSubnet2: # Segunda red privada en AV 2
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
@@ -81,7 +81,7 @@ Resources:
         - Key: Name
           Value: !Sub ${AWS::StackName} Private Subnet (AZ2)
 
-  PublicRouteTable:
+  PublicRouteTable: # Nuestra tabla de enrutamiento para nuestras red publica.
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
@@ -89,37 +89,37 @@ Resources:
         - Key: Name
           Value: !Sub ${AWS::StackName} Public Routes
 
-  DefaultPublicRoute:
+  DefaultPublicRoute: #Regla de permitir trafico 
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
 
-  PublicSubnet1RouteTableAssociation:
+  PublicSubnet1RouteTableAssociation: #Asociamos la regla anterior a nuestra primer red publica
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet1
 
-  PublicSubnet2RouteTableAssociation:
+  PublicSubnet2RouteTableAssociation: #Asociamos la regla anterior a nuestra segunda red publica
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet2
 
-  NatGatewayEIP:
+  NatGatewayEIP: # Asignamos direcciones IP elasticas a nuestra vpc. (para usarla luego para nuestras instancias.)
     Type: AWS::EC2::EIP
     Properties:
       Domain: vpc
 
-  NatGateway:
+  NatGateway: # Nat para nuestra 
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId: !GetAtt NatGatewayEIP.AllocationId
       SubnetId: !Ref PublicSubnet1
 
-  PrivateRouteTable1:
+  PrivateRouteTable1: #Nuestra tabla de enrutamiento para nuestras redes privadas.
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
@@ -127,7 +127,7 @@ Resources:
         - Key: Name
           Value: !Sub ${AWS::StackName} Private Routes
 
-  PrivateRouteTable2:
+  PrivateRouteTable2: #Nuestra tabla de enrutamiento para nuestras redes privadas.
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
@@ -135,40 +135,41 @@ Resources:
         - Key: Name
           Value: !Sub ${AWS::StackName} Private Routes
 
-  PrivateSubnet1RouteTableAssociation:
+  PrivateSubnet1RouteTableAssociation: # Enlazamos nuestra tabla a nuestra primer red. 
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref PrivateRouteTable1
       SubnetId: !Ref PrivateSubnet1
 
-  PrivateSubnet2RouteTableAssociation:
+  PrivateSubnet2RouteTableAssociation: # Enlazamos nuestra tabla 2 a nuestra segunda red privada.
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref PrivateRouteTable2
       SubnetId: !Ref PrivateSubnet2
 
-  DefaultPrivateRoute1:
+  DefaultPrivateRoute1: # Ruta por defecto en nuestra tabla para nuestra red privada 1.
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref PrivateRouteTable1
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NatGateway
 
-  DefaultPrivateRoute2:
+  DefaultPrivateRoute2: # Ruta por defecto en nuestra tabla para nuestra red privada 2.
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref PrivateRouteTable2
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NatGateway
 
-  EC2Instance:
+
+  EC2Instance: #  Instancia servidor
     Type: AWS::EC2::Instance
     Properties:
       AvailabilityZone: !Select [ 0, !GetAZs { Ref: "AWS::Region" } ]
-      IamInstanceProfile: !Ref ContainerInstanceProfile
+      IamInstanceProfile: !Ref ContainerInstanceProfile # Perfil Usuario IAM
       ImageId: !Ref ECSAMI
-      InstanceType: !Ref InstanceType
-      KeyName: !Ref KeyPair
+      InstanceType: !Ref InstanceType # Nuestro tipo de instancia, por defecto t2.micro
+      KeyName: !Ref KeyPair # nuestro keypar declarado arriba.
       SecurityGroupIds:
         - Fn::ImportValue:
             "demo-sg-ecs"
