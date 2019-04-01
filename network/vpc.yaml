@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: "2019-03-30"
+AWSTemplateFormatVersion: "2010-09-09"
 
 Description: > 
   This is a template to create a VPC
@@ -160,29 +160,6 @@ Resources:
       RouteTableId: !Ref PrivateRouteTable2
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NatGateway
-
-
-  EC2Instance: #  Instancia servidor
-    Type: AWS::EC2::Instance
-    Properties:
-      AvailabilityZone: !Select [ 0, !GetAZs { Ref: "AWS::Region" } ]
-      IamInstanceProfile: !Ref ContainerInstanceProfile # Perfil Usuario IAM
-      ImageId: !Ref ECSAMI
-      InstanceType: !Ref InstanceType # Nuestro tipo de instancia, por defecto t2.micro
-      KeyName: !Ref KeyPair # nuestro keypar declarado arriba.
-      SecurityGroupIds:
-        - Fn::ImportValue:
-            "demo-sg-ecs"
-      SubnetId:
-        Fn::ImportValue:
-          "demo-PrivateSubnet1"
-      Tags:
-        - Key: Name
-          Value: !Sub "${AWS::StackName} Container Instance"
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-            ls -l 
 
   PublicSecurityGroup:
     Type: AWS::EC2::SecurityGroup

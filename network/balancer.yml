@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: > 
+  This is a template to configure the Load balancer to share the load between our two server.  
+  how part of project number one of Seminario de sistemas 1 course.  
+  Erick Roberto Tejaxun Xicon 201213050 
+  This security group have the directive that leave that we can connect with ec2 instance (server) 
+  with ssh, and leave that the http/https trafic can in and out of our public subnet.
+  And let a the trafic though our subnets.  
+
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub "${AWS::StackName}-PublicALB"
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+      Subnets:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+  ApplicationLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref 'TargetGroup'
+      LoadBalancerArn: !Ref 'ApplicationLoadBalancer'
+      Port: 80
+      Protocol: HTTP
