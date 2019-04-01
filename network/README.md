@@ -45,6 +45,3 @@ AWS security groups and cloud security. AWS security groups (SGs) are associated
   - Load balancer security group for HTTP and HTTPS ports.
   - Container instances for ECS cluster.
 
-# Computer 
-  - Server web ec2 in a availity zone 1
-  - Server web ec2 in a availity zone 2
