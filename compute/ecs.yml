@@ -284,12 +284,21 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          yum -y update
-          yum install -y aws-cfn-bootstrap aws-cli
-          echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+          sudo apt get update
+          sudo apt get install nodejs
+          sudo apt get install npm
+          var http = require('http'); // 1 - Import Node.js core module
+          mkdir server
+          cd server
+          touch app > "var server = http.createServer(function (req, res) {   // 2 - creating server
+              //handle incomming requests here..
+          });
+          server.listen(5000); //3 - listen for any incoming requests
+          console.log('Node.js web server at port 5000 is running..')";
+          node app.js
           # SSM Agent
-          cd /tmp
-          sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+          #cd /tmp
+          #sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 
   ContainerInstanceProfile:
     Type: AWS::IAM::InstanceProfile
