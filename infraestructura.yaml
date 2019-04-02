@@ -15,9 +15,9 @@ Parameters:
     Type: String
     Default: 10.10.0.0/16 # Con esto podemos tener muchas redes distintas. 255 
 
-  LatestAmiId:
+  AIM:
     Type:  'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
-    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'    
 
 Resources:
   VPC: #Declararemos los parametros para nuestra virtual private cloud. 
@@ -214,7 +214,6 @@ Resources:
         - Key: Name
           Value: !Sub "${AWS::StackName} SG EC2 Instance" 
   
-Resources:
   EC2Instance1:
     Type: AWS::EC2::Instance
     Properties:
@@ -238,8 +237,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       Name: !Sub "${AWS::StackName}-PublicALB"
-      SecurityGroups: 
-        - !Ref LoadBalancerSecurityGroup      
+      SecurityGroups: !Ref LoadBalancerSecurityGroup
       Subnets:
         - !Ref PublicSubnet1
         - !Ref PublicSubnet2
@@ -273,94 +271,83 @@ Resources:
         HttpCode: 200      
 
 Outputs:
+
   VPC:
     Description: A reference to the created VPC
     Value: !Ref VPC
     Export:
-      Name: "SeminarioProyecto1-VPC"
+      Name: "SeminarioProyecto12-VPC"
 
   PublicSubnets:
     Description: A list of the public subnets
     Value: !Join [ ",", [ !Ref PublicSubnet1, !Ref PublicSubnet2 ]]
     Export:
-      Name: "SeminarioProyecto1-PublicSubnets"
+      Name: "SeminarioProyecto12-PublicSubnets"
 
   PrivateSubnets:
     Description: A list of the private subnets
     Value: !Join [ ",", [ !Ref PrivateSubnet1, !Ref PrivateSubnet2 ]]
     Export:
-      Name: "SeminarioProyecto1-PrivateSubnets"
+      Name: "SeminarioProyecto12-PrivateSubnets"
 
   PublicSubnet1:
     Description: A reference to the public subnet in the 1st Availability Zone
     Value: !Ref PublicSubnet1
     Export:
-      Name: "SeminarioProyecto1-PublicSubnet1"
+      Name: "SeminarioProyecto12-PublicSubnet1"
 
   PublicSubnet2:
     Description: A reference to the public subnet in the 2nd Availability Zone
     Value: !Ref PublicSubnet2
     Export:
-      Name: "SeminarioProyecto1-PublicSubnet2"
+      Name: "SeminarioProyecto12-PublicSubnet2"
 
   PrivateSubnet1:
     Description: A reference to the private subnet in the 1st Availability Zone
     Value: !Ref PrivateSubnet1
     Export:
-      Name: "SeminarioProyecto1-PrivateSubnet1"
+      Name: "SeminarioProyecto12-PrivateSubnet1"
 
   PrivateSubnet2:
     Description: A reference to the private subnet in the 2nd Availability Zone
     Value: !Ref PrivateSubnet2
     Export:
-      Name: "SeminarioProyecto1-PrivateSubnet2"
-
-  LoadBalancerSecurityGroup:
-    Description: Secutiry group created for load balancer
-    Value: !Ref LoadBalancerSecurityGroup
-    Export:
-      Name: "SeminarioProyecto1-sg-balanceador"
-
-  EC2SecurityGroup:
-    Description: Secutiry group created for ECS instances in cluster
-    Value: !Ref EC2SecurityGroup
-    Export:
-      Name: "SeminarioProyecto1-sg-ec2"  
-
+      Name: "SeminarioProyecto12-PrivateSubnet2"
   ALBSecutiryGroup:
     Description: Secutiry group created for load balancer
     Value: !Ref LoadBalancerSecurityGroup
     Export:
-      Name: "SeminarioProyecto1-sg-alb"
+      Name: "SeminarioProyecto12-sg-alb"
 
   ECSSecutiryGroup:
     Description: Secutiry group created for ECS web server
     Value: !Ref EC2SecurityGroup
     Export:
-      Name: "SeminarioProyecto1-sg-ecs"
+      Name: "SeminarioProyecto12-sg-ecs"      
 
-    EC2Instance1:
+  EC2Instance1:
     Description: Web Server 1
     Value: !Ref EC2Instance1
     Export:
-      Name: "SeminarioProyecto1-ecs-sever1"
+      Name: "SeminarioProyecto12-ecs-sever1"
 
   EC2Instance1:
     Description: Web Server 2
     Value: !Ref EC2Instance2
     Export:
-      Name: "SeminarioProyecto1-ecs-sever2"  
-       
+      Name: "SeminarioProyecto12-ecs-sever2"    
+
   Listener:
     Description: ApplicationLoadBalancer Listener
     Value: !Ref 'ApplicationLoadBalancerListener'
+    
   ApplicationLoadBalancerEndpoint:
     Description: DNS name of the ApplicationLoadBalancer
     Value: !GetAtt 'ApplicationLoadBalancer.DNSName'
     Export:
-        Name: "SeminarioProyecto1-LoadBalancer"
+        Name: "SeminarioProyecto12-LoadBalancer"
   TargetGroup:
     Description: TargetGroup for ABL
     Value: !Ref TargetGroup
     Export:
-        Name: "SeminarioProyecto1-targetgroup"      
+        Name: "SeminarioProyecto12-targetgroup"            
