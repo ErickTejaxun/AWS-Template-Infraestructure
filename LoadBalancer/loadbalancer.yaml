@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: > 
+  This is a template deploy a load balancer that will be the response that give the load to two server.
+  how part of project number one of Seminario de sistemas 1 course.  
+  Erick Roberto Tejaxun Xicon 201213050 
+
+Resources:
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub "${AWS::StackName}-PublicALB"
+      SecurityGroups:
+        - Fn::ImportValue:
+            "SeminarioProyecto1-sg-alb"
+      Subnets:
+        - Fn::ImportValue:
+            "SeminarioProyecto1-PublicSubnet1"
+        - Fn::ImportValue:
+            "SeminarioProyecto1-PublicSubnet2"
+
+  ApplicationLoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref 'TargetGroup'
+      LoadBalancerArn: !Ref 'ApplicationLoadBalancer'
+      Port: 80
+      Protocol: HTTP
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    DependsOn:
+      - ApplicationLoadBalancer
+    Properties:
+      Name: !Sub "${AWS::StackName}-target-group"
+      Port: 80
+      Protocol: HTTP
+      VpcId:
+        Fn::ImportValue:
+            "SeminarioProyecto1-VPC"
+      HealthCheckTimeoutSeconds: 15
+      HealthCheckIntervalSeconds: 20
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 3
+      Matcher:
+        HttpCode: 200
+Outputs:
+  Listener:
+    Description: ApplicationLoadBalancer Listener
+    Value: !Ref 'ApplicationLoadBalancerListener'
+  ApplicationLoadBalancerEndpoint:
+    Description: DNS name of the ApplicationLoadBalancer
+    Value: !GetAtt 'ApplicationLoadBalancer.DNSName'
+    Export:
+        Name: "SeminarioProyecto1-LoadBalancer"
+  TargetGroup:
+    Description: TargetGroup for ABL
+    Value: !Ref TargetGroup
+    Export:
+        Name: "SeminarioProyecto1-targetgroup"

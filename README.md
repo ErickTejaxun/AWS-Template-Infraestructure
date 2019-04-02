@@ -48,3 +48,8 @@ AWS security groups and cloud security. AWS security groups (SGs) are associated
 # Computer 
   - Server web ec2 in a availity zone 1
   - Server web ec2 in a availity zone 2
+
+# LoadBalancer Aplication
+  - Listener to our Load Balancer aplication
+  - Application Load Balancer Endpoint
+  - Target Group to our load balancer
