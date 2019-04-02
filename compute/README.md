@@ -16,3 +16,8 @@ To our server we will use the
 
 ## Web server 
 To our web server we will use node js.
+
+
+# Output
+  - Server web ec2 in a availity zone 1 
+  - Server web ec2 in a availity zone 2
